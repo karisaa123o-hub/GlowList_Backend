@@ -39,13 +39,13 @@ app.get('/produk', (req, res) => {
 app.post('/produk', (req, res) => {
     const { judul, deskripsi, harga, id_kategori } = req.body;
 
-    if (!judul || !harga) {
-        return res.status(400).json({ message: 'Judul dan harga wajib diisi' });
+    if (!judul || !harga || !deskripsi) {
+        return res.status(400).json({ message: 'judul, harga dan deskripsi wajib diisi' });
     }
 
     const sql = 'INSERT INTO produk (judul, deskripsi, harga, id_kategori, tgl_input) VALUES (?, ?, ?, ?, NOW())';
     db.query(sql, [judul, deskripsi, harga, id_kategori], (err, results) => {
-        if (err) return res.status(500).json({ error: err.sqlmessage });
+        if (err) return res.status(500).json({ error: err.sqlMessage });
         res.json({
             message: 'Produk behasil ditambahkan!',
             id_produk: results.insertId
