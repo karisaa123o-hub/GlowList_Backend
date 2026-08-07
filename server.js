@@ -69,11 +69,19 @@ app.put('/produk/:id_produk', (req, res) => {
 });
 
 app.delete('/produk/:id_produk', (req, res) => {
-    const { id_produk } = res.params;
+    const { id_produk } = req.params;
     const sql = 'DELETE FROM produk WHERE id_produk = ?';
     db.query(sql, [id_produk], (err, result) => {
-        if (err) return res.status(500).json({ error: err.sqlMessage });
-        res.json({ message: 'Produk berhasil dihapus!' });
+        if (err) {
+            return res.status(500).json({ error: err.sqlMessage });
+    }
+    if (result.affectedRows === 0)  {
+        return res.status(404).json({
+            message: 'Produk tidak ditemukan'
+        })
+    }
+        res.json({ 
+            message: 'Produk berhasil dihapus!' });
     });
 });
 
