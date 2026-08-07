@@ -68,6 +68,15 @@ app.put('/produk/:id_produk', (req, res) => {
     });
 });
 
+app.delete('/produk/:id_produk', (req, res) => {
+    const { id_produk } = res.params;
+    const sql = 'DELETE FROM produk WHERE id_produk = ?';
+    db.query(sql, [id_produk], (err, result) => {
+        if (err) return res.status(500).json({ error: err.sqlMessage });
+        res.json({ message: 'Produk berhasil dihapus!' });
+    });
+});
+
 app.get('/kategori', (req, res) => {
     const sql = 'SELECT * FROM kategori';
     db.query(sql, (err, results) => {
