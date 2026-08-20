@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 const PORT = 5000;
 
-app.use(cors ());
+app.use(cors());
 app.use(express.json());
 const mysql = require('mysql2');
 
@@ -57,7 +57,7 @@ app.put('/produk/:id_produk', (req, res) => {
     const { id_produk } = req.params;
     const { judul, deskripsi, harga, id_kategori } = req.body;
 
-    if (!judul || !harga ) {
+    if (!judul || !harga) {
         return res.status(400).json({ message: 'Judul dan harga wajib diisi' });
     }
 
@@ -65,11 +65,11 @@ app.put('/produk/:id_produk', (req, res) => {
     db.query(sql, [judul, deskripsi, harga, id_kategori, id_produk], (err, result) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
 
-        if (result.affectedRows === 0)  {
-        return res.status(404).json({
-            message: 'Produk tidak ditemukan'
-        });
-    }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: 'Produk tidak ditemukan'
+            });
+        }
         res.json({ message: 'Produk berhasil diupdate!' });
     });
 });
@@ -80,14 +80,15 @@ app.delete('/produk/:id_produk', (req, res) => {
     db.query(sql, [id_produk], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.sqlMessage });
-    }
-    if (result.affectedRows === 0)  {
-        return res.status(404).json({
-            message: 'Produk tidak ditemukan'
-        })
-    }
-        res.json({ 
-            message: 'Produk berhasil dihapus!' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: 'Produk tidak ditemukan'
+            })
+        }
+        res.json({
+            message: 'Produk berhasil dihapus!'
+        });
     });
 });
 
@@ -107,6 +108,31 @@ app.get('/kategori', (req, res) => {
         res.json(results);
     });
 })
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+app.post('/pengguna', async (req, res) => {
+    const { nama, email, password, no_hp } = req.body;
+
+    if (!nama || !email || !password) {
+        return res.status(400).json({ message: 'Nama, email, dan password wajib diisi!' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const sql = 'INSERT INTO pengguna (nama, email, password, no_hp) VALUES (?, ?, ?, ?)';
+        db.query(sql, [nama, email, hashedPassword, no_hp], (err, result) => {
+            if (err) return res.status(500).json({ error: (err.sqlMessage) });
+            res.json({
+                message: 'Akun berhasil dibuat!',
+                id_pengguna: result.insertId
+            });
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Gagal mengenkripsi password' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server GlowList jalan di http://localhost:${PORT}`);
