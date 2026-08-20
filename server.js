@@ -123,6 +123,13 @@ app.post('/pengguna', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const sql = 'INSERT INTO pengguna (nama, email, password, no_hp) VALUES (?, ?, ?, ?)';
         db.query(sql, [nama, email, hashedPassword, no_hp], (err, result) => {
+
+            if (err && err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({
+                    message: 'Email sudah terdaftar, gunakan email lain'
+                });
+            }
+
             if (err) return res.status(500).json({ error: (err.sqlMessage) });
             res.json({
                 message: 'Akun berhasil dibuat!',
