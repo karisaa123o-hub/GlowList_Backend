@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const secreKey = 'glowlistrahasia';
 
-const authJWT = (res, res, next) => {
+const authJWT = (req, res, next) => {
     const token = req.header('Authorization');
 
     if (token) {

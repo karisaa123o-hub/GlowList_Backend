@@ -38,7 +38,7 @@ app.get('/produk', (req, res) => {
     });
 })
 
-app.post('/produk', (req, res) => {
+app.post('/produk', authJWT, (req, res) => {
     const { judul, deskripsi, harga, id_kategori } = req.body;
 
     if (!judul || !harga || !deskripsi) {
@@ -55,7 +55,7 @@ app.post('/produk', (req, res) => {
     });
 });
 
-app.put('/produk/:id_produk', (req, res) => {
+app.put('/produk/:id_produk', authJWT, (req, res) => {
     const { id_produk } = req.params;
     const { judul, deskripsi, harga, id_kategori } = req.body;
 
@@ -172,6 +172,24 @@ app.post('/login', (req, res) => {
             id_pengguna: user.id_pengguna,
             nama: user.nama
         });
+    });
+});
+
+app.get('/pengguna/me', authJWT, (req, res) => {
+    const id_pengguna = req.user.id;
+
+    const sql = `SELECT id_pengguna, nama, email, no_hp FROM pengguna WHERE id_pengguna = ?`;
+
+    db.query(sql, [id_pengguna], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.sqlMessage });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
+        }
+
+        res.json(result[0]);
     });
 });
 
