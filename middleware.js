@@ -8,7 +8,7 @@ const authJWT = (req, res, next) => {
         const auth = token.split(' ')[1];
         jwt.verify(auth, secreKey, (err, user) => {
             if (err) {
-                return res.status(403).json({ message: 'Tokentidak valis' });
+                return res.status(403).json({ message: 'Token tidak valid' });
             }
             req.user = user;
             next();
