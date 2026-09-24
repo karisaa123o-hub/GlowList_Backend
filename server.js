@@ -87,7 +87,7 @@ app.put('/produk/:id_produk', authJWT, upload.single('file'), (req, res) => {
         }
 
         if (result.length === 0) {
-            return res.status(404).json({ message: 'Produk tidak ditemuakan' });
+            return res.status(404).json({ message: 'Produk tidak ditemukan' });
         }
         
         //Jika ada file baru, guna nama file baru
